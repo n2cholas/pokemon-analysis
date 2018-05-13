@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup as soup
 
 name = 'Inkay'
 def str_to_num(s):
-    
     isNum = all(['0' <= letter <= '9' for letter in s]) and len(s) > 0 #and ord(letter) != 8212
     return int(s) if isNum else None
 

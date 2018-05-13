@@ -83,7 +83,7 @@ pokemon = [] #will be list of pokemon
 alternate_forms = ['Arceus', 'Deoxys'] #these pokemon have alterante forms listed in evos
 
 f = open('pokemon-data.csv', 'w')
-f.write('Name; Types; Abilities; Tier; HP; Attack; Defense; Special Attack; Special Defense; Speed; Next Evolution(s); Moves\n')
+f.write('Name;Types;Abilities;Tier;HP;Attack;Defense;Special Attack;Special Defense;Speed;Next Evolution(s);Moves\n')
 
 with open('smogon-data.json') as json_data:
     pokemon = json.load(json_data)['pokemon']
