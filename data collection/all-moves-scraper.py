@@ -31,7 +31,7 @@ page_soup = soup(page.text, "html.parser")
 table = list(page_soup.find("table", {"border":1}))
 
 f = open('move-data.csv', 'w')
-f.write('Index;Name;Type;Category;Contest;PP;Power;Accuracy;Gen\n')
+f.write('Index;Name;Type;Category;Contest;PP;Power;Accuracy;Generation\n')
 
 for i in range(3, len(table), 2):
     cur = list(table[i])
