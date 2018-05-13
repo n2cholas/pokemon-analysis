@@ -1,9 +1,28 @@
 import requests
 from bs4 import BeautifulSoup as soup
 
+'''
+Scraped from: https://bulbapedia.bulbagarden.net/wiki/List_of_moves
+
+CSV Specification:
+    Index - Int
+    Name - String
+    Type - String
+    Category - String
+    Contest - String
+    PP - Int
+    Power - Int or None
+    Accuracy - Int or None
+    Gen - Int
+'''
+
 def str_to_num(s):
+    if s[-1] == "*" or s[-1] == "%":
+        s = s[:-1]
     isNum = all(['0' <= letter <= '9' for letter in s]) and len(s) > 0 #and ord(letter) != 8212
-    return int(s) if isNum else None
+    return str(int(s)) if isNum else 'None' #turned into string to make writing to csv easier
+
+generation = {"I":1, "II":2, "III":3,"IV":4, "V":5, "VI":6, "VII":7}
 
 url = "https://bulbapedia.bulbagarden.net/wiki/List_of_moves"
 page = requests.get(url)
@@ -22,10 +41,10 @@ for i in range(3, len(table), 2):
         cur[5].span.text.strip()+';'+ #type
         cur[7].span.text.strip()+';'+ #category
         cur[9].span.text.strip()+';'+ #contest
-        cur[11].text.strip()+';'+ #pp
-        cur[13].text.strip()+';'+ #power
-        cur[15].text.strip()+';'+ #accuracy (remove percent symbol)
-        cur[17].text.strip()+'\n'
+        str_to_num(cur[11].text.strip())+';'+ #pp
+        str_to_num(cur[13].text.strip())+';'+ #power
+        str_to_num(cur[15].text.strip())+';'+ #accuracy
+        str(generation[cur[17].text.strip().replace("*","")])+'\n'
     ).replace("*","")
     f.write(temp_str)
 

@@ -1,4 +1,9 @@
 # Smogon Scraper
+
+import json
+import requests
+from bs4 import BeautifulSoup as soup
+
 '''
 Notes:
 - All mega evolutions, alternate forms, and regional variants
@@ -20,21 +25,18 @@ CSV Specification:
     Special Defense - Int
     Speed - Int
     Next Evolution(s) - List of Strings
-    Moves - Set of Dictionaries, containing:
-        Name - String
-        Type - String
-        Category - String
-        Power - Int or NaN
-        Accuracy - Int or NaN
-        PP - Int
-        Description - String
+    Moves - Dictionary of Dictionaries, containing:
+        Key:    Name - String
+        Value:  Dictionary: 
+            Type - String
+            Category - String
+            Power - Int or None
+            Accuracy - Int or None
+            PP - Int
 
 '''
 
-import json
-import requests
-from bs4 import BeautifulSoup as soup
-
+# Gets moves and stores it as a dictionary with the move name as the key and values as dictionaries containing details
 def get_moves(name):
     def str_to_num(s):
         isNum = all(['0' <= letter <= '9' for letter in s]) and len(s) > 0 #and ord(letter) != 8212
