@@ -1,6 +1,13 @@
+'''
+Scrapes moves for a pokemon from bulbapedia
+
+DOES NOT ALWAYS WORK!
+'''
+
 import json
 import requests
 from bs4 import BeautifulSoup as soup
+import re
 
 name = 'Araquanid'
 

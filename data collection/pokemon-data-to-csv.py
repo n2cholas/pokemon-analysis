@@ -3,6 +3,7 @@
 import json
 import requests
 from bs4 import BeautifulSoup as soup
+import re
 
 '''
 Notes:
@@ -25,60 +26,61 @@ CSV Specification:
     Special Defense - Int
     Speed - Int
     Next Evolution(s) - List of Strings
-    Moves - Dictionary of Dictionaries, containing:
-        Key:    Name - String
-        Value:  Dictionary: 
-            Type - String
-            Category - String
-            Power - Int or None
-            Accuracy - Int or None
-            PP - Int
+    Moves - List of Strings (of move names)
 
 '''
 
 # Gets moves and stores it as a dictionary with the move name as the key and values as dictionaries containing details
 def get_moves(name):
-    def str_to_num(s):
-        isNum = all(['0' <= letter <= '9' for letter in s]) and len(s) > 0 #and ord(letter) != 8212
-        return int(s) if isNum else None
+    name = name.lower().replace('%', '')
+    pos = name.find('-')
+    space = name.rfind(' ')
+    suffix = name[pos+1:space if space != -1 else len(name)].replace('\'','')
 
-    url = "https://bulbapedia.bulbagarden.net/wiki/" + name + "_(Pokemon)"
+    # deals with pokemon with alternate male/female forms
+    if suffix == 'm': 
+        suffix = 'male'
+    elif suffix == 'f': 
+        suffix = 'female'
+
+    #deals with other forms (alola, therian, etc)
+    if name == 'nidoran-m': 
+        name = 'nidoran♂'
+    elif name == 'nidoran-f': 
+        name = 'nidoran♀'
+    elif name == 'flabebe': 
+        name = 'flabébé'
+    elif name == 'farfetch\'d':
+        name = 'farfetch’d'
+    elif pos != -1 and name not in ['ho-oh', 'porygon-z', 'jangmo-o', 'kommo-o', 'hakamo-o']:
+        name = name[:pos] + '?form=' + suffix
+
+    url = "https://veekun.com/dex/pokemon/" + name 
     page = requests.get(url)
     page_soup = soup(page.text, "html.parser")
+    move_names = []
 
-    #col = list(soup.body.div)[1]
-    tabs = page_soup.find_all("table", {"class":"roundy"})[2:] #exclude titles
-    movepools = [list(list(y.find_all("table"))[2]) for y in tabs if y.find("big") and len(list(y.find_all("table"))) == 3] #gets all move tables
-    moves = {}
+    try:
+        table = list(page_soup.find("table", {"class":"dex-pokemon-moves dex-pokemon-pokemon-moves striped-rows"})) #big table with all moves
+        levelup_lst = list(table[7]) #everything before 7 are headers
+        #levelup_lst[odd numbers].a are the move names as URLs
+        #for moves, the href looks like: href="/dex/moves/<move name>"
+    except TypeError:
+        print('Could not get table for ' + name)
+        return move_names
 
-    #Level up and HMs TMs Table
-    for pool in movepools[:2]:
-        if (len(pool) == 4): continue #avoid empty movepools (e.g. breeding set might be empty)
-        for i in range(3, len(pool), 2):
-            cur = list(pool[i])
-            moves[cur[-11].span.text.strip()] = {
-                "Type":     cur[-9].span.text.strip(),
-                "Category": cur[-7].span.text.strip(),
-                "Power":    str_to_num(cur[-5].span.text.strip()),
-                "Accuracy": str_to_num(cur[-3].span.text.strip()[:3]),
-                "PP":       int(cur[-1].text.strip())
-            } 
-            ''' negative indices are used because the front of the 
-            table varies, but the tail end is always constant'''
+    for lst in table[7::2]: #every odd list of the table
+        for move in list(lst)[1::2]: #every odd element is a move
+            try:
+                if move.a['href'][:11] == '/dex/moves/':
+                    move_names.append(re.sub('[^0-9a-zA-Z ]+', '\'', move.a.text.strip()))
+            except:
+                pass
 
-    # Tutoring and Breeding Tables
-    for pool in movepools[2:]:
-        if (len(pool) == 4): continue
-        for i in range(3, len(pool), 2):
-                cur = list(pool[i])
-                moves[cur[-11].span.text.strip()] = {
-                    "Type":     cur[-9].span.text.strip(),
-                    "Category": cur[-7].text.strip(),
-                    "Power":    str_to_num(cur[-5].text.strip()),
-                    "Accuracy": str_to_num(cur[-3].text.strip()[:-1]),#to get rid of the percent sign
-                    "PP":       cur[-1].text.strip()
-                }
-    return moves
+    if move_names == []: 
+        print('Warning: empty move list for ' + name)
+
+    return move_names
 
 pokemon = [] #will be list of pokemon
 alternate_forms = ['Arceus', 'Deoxys'] #these pokemon have alterante forms listed in evos

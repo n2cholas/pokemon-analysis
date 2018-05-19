@@ -1,6 +1,6 @@
 # Data Collection
 
-Competitive data about pokemon and moves were scraped from smogon and bulbapedia and stores as CSVs delimited by semicolons. Pokemon and moves are up to date as of 2018-05-12.
+Competitive data about pokemon and moves were scraped from smogon and bulbapedia and stores as CSVs delimited by semicolons. Pokemon and moves are up to date as of 2018-05-19.
 
 **pokemon-data.csv**:
 
@@ -15,16 +15,9 @@ Competitive data about pokemon and moves were scraped from smogon and bulbapedia
     Special Defense - Int
     Speed - Int
     Next Evolution(s) - List of Strings
-    Moves - Dictionary of Dictionaries, containing:
-        Key:    Name - String
-        Value:  Dictionary: 
-            Type - String
-            Category - String
-            Power - Int or None
-            Accuracy - Int or None
-            PP - Int
+    Moves - List of Strings (of move names)
             
-Scraped by pokemon-data-to-csv.py from smogon-data.json (which is the HTML from https://www.smogon.com/dex/sm/pokemon/)
+Scraped by pokemon-data-to-csv.py from smogon-data.json (which is the HTML from https://www.smogon.com/dex/sm/pokemon/). Moves scraped from https://veekun.com. 
  <br>
  <br>
 
