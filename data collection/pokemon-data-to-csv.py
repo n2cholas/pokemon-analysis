@@ -66,8 +66,6 @@ def get_moves(name):
             ''' negative indices are used because the front of the 
             table varies, but the tail end is always constant'''
 
-    return moves
-
     # Tutoring and Breeding Tables
     for pool in movepools[2:]:
         if (len(pool) == 4): continue
@@ -80,6 +78,7 @@ def get_moves(name):
                     "Accuracy": str_to_num(cur[-3].text.strip()[:-1]),#to get rid of the percent sign
                     "PP":       cur[-1].text.strip()
                 }
+    return moves
 
 pokemon = [] #will be list of pokemon
 alternate_forms = ['Arceus', 'Deoxys'] #these pokemon have alterante forms listed in evos
