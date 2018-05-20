@@ -83,7 +83,8 @@ def get_moves(name):
     return move_names
 
 pokemon = [] #will be list of pokemon
-alternate_forms = ['Arceus', 'Deoxys'] #these pokemon have alterante forms listed in evos
+alternate_forms = ['Arceus', 'Deoxys', 'Silvally' ] #these pokemon have alterante forms listed in evos
+#,'Giratina','Greninja','Hoopa', 'Kyurem','Landorus','Shaymin','Tornadus','Thundurus']
 
 f = open('pokemon-data.csv', 'w')
 f.write('Name;Types;Abilities;Tier;HP;Attack;Defense;Special Attack;Special Defense;Speed;Next Evolution(s);Moves\n')
@@ -94,6 +95,8 @@ with open('smogon-data.json') as json_data:
 for p in pokemon    :
     if p['name'][:6] == 'Arceus' and p['name'] != 'Arceus': 
         continue #so the alternate arceus forms don't get saved
+    elif p['name'][:8] == 'Silvally' and p['name'] != 'Silvally':
+        continue
     moves = get_moves(p['name'])
 
     for form in p['alts']:
